@@ -3,7 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { createCanvas } from '@napi-rs/canvas';
-import ffmpegPath from 'ffmpeg-static';
+import ffmpegStatic from 'ffmpeg-static';
 import { PATHS } from '../config.mjs';
 import { initFonts } from '../lib/fonts.mjs';
 import { metricsFor } from './render/layout.mjs';
@@ -15,6 +15,9 @@ import creme from './render/styles/creme.mjs';
 import neon from './render/styles/neon.mjs';
 import pixel from './render/styles/pixel.mjs';
 import bold from './render/styles/bold.mjs';
+
+// FFMPEG_BIN permite apontar para um ffmpeg do sistema.
+const ffmpegPath = process.env.FFMPEG_BIN || ffmpegStatic;
 
 export const STYLES = { creme, neon, pixel, bold };
 
@@ -102,7 +105,8 @@ async function frameWriter(ff, buffer) {
  *          rate:string, pitch:string, fps:number, music:string|null, musicVolume:number}} input
  */
 export async function renderVideo(input, { onProgress = () => {}, signal } = {}) {
-  if (!ffmpegPath || !fs.existsSync(ffmpegPath)) {
+  const isPath = /[/\\]/.test(String(ffmpegPath));
+  if (!ffmpegPath || (isPath && !fs.existsSync(ffmpegPath))) {
     throw new Error(
       'ffmpeg não encontrado. Rode "npm rebuild ffmpeg-static" (ou "npm install --foreground-scripts") para baixar o binário.',
     );

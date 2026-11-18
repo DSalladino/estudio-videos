@@ -298,6 +298,21 @@ const server = http.createServer(async (req, res) => {
 });
 
 initFonts();
+
+// Checagem rápida do ffmpeg: evita descobrir o problema só na hora de renderizar.
+(async () => {
+  const { runFfmpeg } = await import('./pipeline/audio.mjs');
+  const ffmpegBin = process.env.FFMPEG_BIN || (await import('ffmpeg-static')).default;
+  try {
+    const encoders = (await runFfmpeg(ffmpegBin, ['-hide_banner', '-encoders'])).toString();
+    if (/libx264/.test(encoders)) console.log('  ffmpeg ok (libx264 encontrado)');
+    else console.warn('  ATENÇÃO: o ffmpeg não tem libx264. Defina FFMPEG_BIN com um ffmpeg completo.');
+  } catch (err) {
+    console.warn(`  ATENÇÃO: não consegui executar o ffmpeg (${err.message.split('\n')[0]})`);
+    console.warn('  Rode "npm rebuild ffmpeg-static" ou defina FFMPEG_BIN.');
+  }
+})();
+
 server.listen(PORT, HOST, () => {
   console.log('');
   console.log('  ESTÚDIO DE VÍDEOS');

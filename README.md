@@ -134,6 +134,15 @@ Depois registre-o em `src/pipeline/render.mjs` (`import` + entrada em `STYLES`).
 - O servidor só escuta em `127.0.0.1`: nada na rede local acessa o painel.
 - `output/` — vídeos finais + miniatura + um `.json` com os metadados de cada um.
 
+## Se algo der errado
+
+- **“ffmpeg não encontrado”** — o binário vem no `npm install`. Rode `npm rebuild ffmpeg-static`
+  (ou `npm install --foreground-scripts`) e tente de novo. Se preferir o ffmpeg do sistema, defina
+  `FFMPEG_BIN` com o caminho dele.
+- **Vídeo sai sem som** — o Edge TTS precisa de internet. O servidor mostra o aviso no log e usa a
+  voz do Windows como reserva.
+- **Porta 4321 ocupada** — rode `PORT=4400 npm start` (Windows: `set PORT=4400 && npm start`).
+
 ## Limites (para não gerar expectativa errada)
 
 - O visual é **motion graphics procedural**: tipografia, formas, imagens que você coloca em
