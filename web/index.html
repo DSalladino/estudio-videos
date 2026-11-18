@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Estúdio de Vídeos</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%238c7bff'/%3E%3Cpath d='M38 32l26 18-26 18z' fill='%23090b11'/%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="mark"></span>
+        <div>
+          <strong>ESTÚDIO</strong>
+          <span>de vídeos automáticos</span>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <span id="aiStatus" class="pill">IA: verificando…</span>
+        <button id="settingsBtn" class="ghost">Configurar IA</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel">
+        <h2><span class="step">1</span> O que o vídeo conta?</h2>
+
+        <label class="label" for="theme">Tema</label>
+        <textarea id="theme" rows="3" placeholder="Ex: por que o mar é salgado, a história do dinheiro, o que acontece se você ficar 11 dias sem dormir..."></textarea>
+
+        <details class="advanced">
+          <summary>Já tenho um roteiro pronto</summary>
+          <textarea id="scriptText" rows="6" placeholder="Cole aqui o texto que será narrado. Cada frase vira uma cena."></textarea>
+          <p class="hint">Se você colar um roteiro, o tema acima não é usado para escrever — o seu texto manda.</p>
+        </details>
+
+        <div class="field">
+          <div class="row-between">
+            <span class="label">Estilo visual</span>
+          </div>
+          <div id="styleList" class="styles-grid"></div>
+        </div>
+
+        <div class="field">
+          <span class="label">Formato</span>
+          <div id="formatSeg" class="segmented"></div>
+        </div>
+
+        <div class="field">
+          <span class="label">Voz da narração</span>
+          <select id="voice"></select>
+        </div>
+
+        <div class="field">
+          <div class="row-between">
+            <span class="label">Velocidade da fala</span>
+            <span id="rateLabel" class="mono muted">+8%</span>
+          </div>
+          <input id="rate" type="range" min="-30" max="40" step="2" value="8" />
+        </div>
+
+        <div class="field">
+          <div class="row-between">
+            <span class="label">Música de fundo</span>
+            <span id="musicLabel" class="mono muted">desligada</span>
+          </div>
+          <select id="music"></select>
+          <input id="musicVolume" type="range" min="0" max="40" step="1" value="10" />
+        </div>
+
+        <button id="generateBtn" class="primary">Gerar roteiro</button>
+        <p id="generateHint" class="hint"></p>
+      </section>
+
+      <section class="panel">
+        <h2><span class="step">2</span> Roteiro</h2>
+        <p class="hint" id="scriptIntro">Gere um roteiro ou cole o seu. Você pode editar cada cena antes de renderizar.</p>
+
+        <input id="title" class="title-input" placeholder="Título do vídeo (vira o nome do arquivo)" />
+
+        <div id="scenes" class="scenes"></div>
+
+        <button id="addSceneBtn" class="ghost small">+ adicionar cena</button>
+
+        <div class="render-bar">
+          <div>
+            <div id="estimate" class="mono muted">0 cenas · ~0s</div>
+            <div class="hint">9:16 gera Reels/Shorts · 16:9 gera YouTube</div>
+          </div>
+          <button id="renderBtn" class="accent">Renderizar vídeo</button>
+        </div>
+
+        <div id="progress" class="progress hidden">
+          <div class="progress-head">
+            <span id="progressStage">preparando…</span>
+            <span id="progressPct" class="mono">0%</span>
+          </div>
+          <div class="bar"><div id="progressFill" class="fill"></div></div>
+          <div class="progress-foot">
+            <span id="progressMessage" class="hint"></span>
+            <button id="cancelBtn" class="ghost small">cancelar</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <section class="library">
+      <div class="row-between">
+        <h2><span class="step">3</span> Vídeos prontos</h2>
+        <button id="refreshBtn" class="ghost small">atualizar</button>
+      </div>
+      <div id="videos" class="videos"></div>
+      <p id="emptyLibrary" class="hint">Nada renderizado ainda. O primeiro vídeo sai em alguns minutos.</p>
+    </section>
+
+    <footer class="foot">
+      <span>Roda 100% no seu PC · saída em <code>output/</code> · fundos em <code>assets/broll</code> · músicas em <code>assets/music</code></span>
+    </footer>
+
+    <dialog id="settingsDialog" class="dialog">
+      <form method="dialog" id="settingsForm">
+        <h3>Inteligência artificial (opcional)</h3>
+        <p class="hint">
+          A IA escreve o roteiro a partir do tema. Funciona com qualquer API compatível com OpenAI
+          (OpenAI, Groq, OpenRouter, DeepSeek, Ollama local…). Sem chave, o painel ainda monta um
+          esqueleto de roteiro para você preencher.
+        </p>
+        <label class="label" for="llmBaseUrl">Endereço da API</label>
+        <input id="llmBaseUrl" placeholder="https://api.openai.com/v1" />
+        <label class="label" for="llmModel">Modelo</label>
+        <input id="llmModel" placeholder="gpt-4o-mini" />
+        <label class="label" for="llmApiKey">Chave da API</label>
+        <input id="llmApiKey" type="password" placeholder="sk-…" />
+        <div class="dialog-actions">
+          <button value="cancel" class="ghost">Fechar</button>
+          <button id="saveSettingsBtn" value="save" class="primary">Salvar</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

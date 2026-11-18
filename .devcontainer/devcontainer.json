@@ -1,0 +1,27 @@
+{
+  "name": "Estúdio de Vídeos",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20-bullseye",
+  "containerEnv": {
+    "HOST": "0.0.0.0",
+    "PORT": "4321"
+  },
+  "postCreateCommand": "npm install --foreground-scripts && node -e \"console.log('ffmpeg:', require('ffmpeg-static'))\"",
+  "postStartCommand": "pkill -f 'node src/server.mjs' || true; nohup npm start > /tmp/estudio.log 2>&1 &",
+  "postAttachCommand": "sleep 2; tail -n 12 /tmp/estudio.log || true",
+  "forwardPorts": [4321],
+  "portsAttributes": {
+    "4321": {
+      "label": "Estúdio de Vídeos",
+      "onAutoForward": "openBrowser",
+      "visibility": "private"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  }
+}
